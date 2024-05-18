@@ -1,2 +1,3 @@
-# backend_salvatore_academy_mongodb_intro_implementacao
+# Backend Salvatore Academy - CRUD com MongoDB
+
 Projeto da missão de aprendizagem Dev Backend JavaScript iniciante - MongoDB: Intro e Implementação
