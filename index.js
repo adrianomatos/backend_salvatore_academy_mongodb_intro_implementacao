@@ -1,76 +1,96 @@
 // CRIA APLICAÇÃO USANDO EXPRESS
 const express = require("express");
-const app = express();
+const { MongoClient } = require("mongodb");
 
-//  ENDPOINT PRINCIPAL
-app.get("/", function (req, res) {
-  res.send("Hello World Nodemon!");
-});
+// Informações de acesso ao BANCO DE DADOS
+const dbUrl = "dbUrl";
+const dbName = "dbName";
 
-// LISTA
-const lista = ["Java", "Android", "Kotlin", "JavaScript"];
+// Função principal MAIN
+async function main() {
+  // Conexão ao Banco de Dados
+  const client = new MongoClient(dbUrl);
+  console.log("Conectando ao Banco de Dados...");
+  await client.connect();
+  console.log("Banco de Dados conectado com sucesso!");
+  const db = client.db(dbName);
+  const collection = db.collection("personagem");
 
-// ENDPOINT Read All
-app.get("/personagens", function (req, res) {
-  res.send(lista.filter(Boolean));
-});
+  const app = express();
 
-// ENDPOINT Read By ID
-app.get("/personagens/:id", function (req, res) {
-  const id = req.params.id;
-  const item = lista[id - 1];
-  if (!item) {
-    return res.status(404).send("ALERTA: Ítem não encontrado");
-  }
-  res.send(item);
-});
+  //  ENDPOINT PRINCIPAL
+  app.get("/", function (req, res) {
+    res.send("Hello World Nodemon!");
+  });
 
-// Sinalisando que express está usando JSON
-app.use(express.json());
+  // LISTA
+  const lista = ["Java", "Android", "Kotlin", "JavaScript"];
 
-// ENDPOINT Create POST /personagens
-app.post("/personagens", function (req, res) {
-  const body = req.body;
-  const novoItem = body.nome;
-  if (!novoItem) {
-    return res.status(400).send("ALERTA: Falta propriedade NOME");
-  }
-  if (lista.includes(novoItem)) {
-    return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
-  }
-  lista.push(novoItem);
-  res.status(201).send("Ítem adicionado com sucesso: " + novoItem);
-});
+  // ENDPOINT Read All
+  app.get("/personagens", function (req, res) {
+    res.send(lista.filter(Boolean));
+  });
 
-// ENDPOINT Update PUT /personagens/id
-app.put("/personagens/:id", function (req, res) {
-  const id = req.params.id; // Acessando o parâmetro ID da rota
-  if (!lista[id - 1]) {
-    return res.status(404).send("ALERTA: Ítem não encontrado");
-  }
-  const body = req.body; // Acessando o BODY da requisição
-  const novoItem = body.nome; // Acessando propriedade nome do body
-  if (!novoItem) {
-    return res.status(400).send("ALERTA: Falta propriedade NOME");
-  }
-  if (lista.includes(novoItem)) {
-    return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
-  }
-  lista[id - 1] = novoItem; // Atualisamos na lista pelo ID - 1
-  res.send("Ítem alterado com sucesso: " + id + " - " + novoItem);
-});
+  // ENDPOINT Read By ID
+  app.get("/personagens/:id", function (req, res) {
+    const id = req.params.id;
+    const item = lista[id - 1];
+    if (!item) {
+      return res.status(404).send("ALERTA: Ítem não encontrado");
+    }
+    res.send(item);
+  });
 
-// ENDPOINT DELETE /personagens/id
-app.delete("/personagens/:id", function (req, res) {
-  const id = req.params.id; // Acessando o parâmetro ID da rota
-  if (!lista[id - 1]) {
-    return res.status(404).send("ALERTA: Ítem não encontrado");
-  }
-  delete lista[id - 1]; // Deleta pelo ID - 1
-  res.send("Ítem removido com sucesso: " + id);
-});
+  // Sinalisando que express está usando JSON
+  app.use(express.json());
 
-// SERVIDOR OUVINDO
-app.listen(3000, () =>
-  console.log("Servidor rodando em http://localhost:3000")
-);
+  // ENDPOINT Create POST /personagens
+  app.post("/personagens", function (req, res) {
+    const body = req.body;
+    const novoItem = body.nome;
+    if (!novoItem) {
+      return res.status(400).send("ALERTA: Falta propriedade NOME");
+    }
+    if (lista.includes(novoItem)) {
+      return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
+    }
+    lista.push(novoItem);
+    res.status(201).send("Ítem adicionado com sucesso: " + novoItem);
+  });
+
+  // ENDPOINT Update PUT /personagens/id
+  app.put("/personagens/:id", function (req, res) {
+    const id = req.params.id; // Acessando o parâmetro ID da rota
+    if (!lista[id - 1]) {
+      return res.status(404).send("ALERTA: Ítem não encontrado");
+    }
+    const body = req.body; // Acessando o BODY da requisição
+    const novoItem = body.nome; // Acessando propriedade nome do body
+    if (!novoItem) {
+      return res.status(400).send("ALERTA: Falta propriedade NOME");
+    }
+    if (lista.includes(novoItem)) {
+      return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
+    }
+    lista[id - 1] = novoItem; // Atualisamos na lista pelo ID - 1
+    res.send("Ítem alterado com sucesso: " + id + " - " + novoItem);
+  });
+
+  // ENDPOINT DELETE /personagens/id
+  app.delete("/personagens/:id", function (req, res) {
+    const id = req.params.id; // Acessando o parâmetro ID da rota
+    if (!lista[id - 1]) {
+      return res.status(404).send("ALERTA: Ítem não encontrado");
+    }
+    delete lista[id - 1]; // Deleta pelo ID - 1
+    res.send("Ítem removido com sucesso: " + id);
+  });
+
+  // SERVIDOR OUVINDO
+  app.listen(3000, () =>
+    console.log("Servidor rodando em http://localhost:3000")
+  );
+}
+
+// Executando função principal main
+main();
