@@ -3,8 +3,9 @@ const express = require("express");
 const { MongoClient } = require("mongodb");
 
 // Informações de acesso ao BANCO DE DADOS
-const dbUrl = "dbUrl";
-const dbName = "dbName";
+const dbUrl =
+  "mongodb+srv://admin:A57kAkg6eykAb9@cluster0.bn1bc7s.mongodb.net/";
+const dbName = "mongodb_intro_implementacao";
 
 // Função principal MAIN
 async function main() {
@@ -24,11 +25,12 @@ async function main() {
   });
 
   // LISTA
-  const lista = ["Java", "Android", "Kotlin", "JavaScript"];
+  // const lista = ["Java", "Android", "Kotlin", "JavaScript"];
 
   // ENDPOINT Read All
-  app.get("/personagens", function (req, res) {
-    res.send(lista.filter(Boolean));
+  app.get("/personagens", async function (req, res) {
+    const itens = await collection.find().toArray();
+    res.send(itens);
   });
 
   // ENDPOINT Read By ID
