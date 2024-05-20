@@ -19,7 +19,7 @@ async function main() {
 
   const app = express();
 
-  //  ENDPOINT PRINCIPAL
+  // ---------- ---------- ENDPOINT PRINCIPAL
   app.get("/", function (req, res) {
     res.send("Hello World Nodemon!");
   });
@@ -27,13 +27,13 @@ async function main() {
   // LISTA
   // const lista = ["Java", "Android", "Kotlin", "JavaScript"];
 
-  // ENDPOINT Read All
+  // ---------- ---------- ENDPOINT READ ALL
   app.get("/personagens", async function (req, res) {
     const itens = await collection.find().toArray();
     res.send(itens);
   });
 
-  // ENDPOINT Read By ID
+  // ---------- ---------- ENDPOINT READ BY ID
   app.get("/personagens/:id", async function (req, res) {
     const id = req.params.id;
     const item = await collection.findOne({ _id: new ObjectId(id) });
@@ -46,7 +46,8 @@ async function main() {
   // Sinalisando que express está usando JSON
   app.use(express.json());
 
-  // ENDPOINT Create POST /personagens
+  // ---------- ---------- ENDPOINT CREATE COM POST
+  // /personagens
   app.post("/personagens", async function (req, res) {
     const novoItem = req.body;
     if (!novoItem || !novoItem.nome) {
@@ -56,34 +57,36 @@ async function main() {
     //   return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
     // }
     await collection.insertOne(novoItem);
-    res.status(201).send("Ítem adicionado com sucesso: " + novoItem);
+    res.status(201).send(novoItem);
   });
 
-  // ENDPOINT Update PUT /personagens/id
-  app.put("/personagens/:id", function (req, res) {
-    const id = req.params.id; // Acessando o parâmetro ID da rota
-    if (!lista[id - 1]) {
-      return res.status(404).send("ALERTA: Ítem não encontrado");
-    }
-    const body = req.body; // Acessando o BODY da requisição
-    const novoItem = body.nome; // Acessando propriedade nome do body
-    if (!novoItem) {
+  // ---------- ---------- ENDPOINT UPDATE COM PUT
+  // /personagens/id
+  app.put("/personagens/:id", async function (req, res) {
+    const id = req.params.id;
+    // if (!lista[id - 1]) {
+    //   return res.status(404).send("ALERTA: Ítem não encontrado");
+    // }
+    const novoItem = req.body;
+
+    if (!novoItem || !novoItem.nome) {
       return res.status(400).send("ALERTA: Falta propriedade NOME");
     }
-    if (lista.includes(novoItem)) {
-      return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
-    }
-    lista[id - 1] = novoItem; // Atualisamos na lista pelo ID - 1
-    res.send("Ítem alterado com sucesso: " + id + " - " + novoItem);
+    // if (lista.includes(novoItem)) {
+    //   return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
+    // }
+    await collection.updateOne({ _id: new ObjectId(id) }, { $set: novoItem });
+    res.send(novoItem);
   });
 
-  // ENDPOINT DELETE /personagens/id
+  // ---------- ---------- ENDPOINT DELETE
+  // /personagens/id
   app.delete("/personagens/:id", function (req, res) {
-    const id = req.params.id; // Acessando o parâmetro ID da rota
+    const id = req.params.id;
     if (!lista[id - 1]) {
       return res.status(404).send("ALERTA: Ítem não encontrado");
     }
-    delete lista[id - 1]; // Deleta pelo ID - 1
+    delete lista[id - 1];
     res.send("Ítem removido com sucesso: " + id);
   });
 
