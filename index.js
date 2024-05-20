@@ -1,6 +1,6 @@
 // CRIA APLICAÇÃO USANDO EXPRESS
 const express = require("express");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 
 // Informações de acesso ao BANCO DE DADOS
 const dbUrl =
@@ -34,9 +34,9 @@ async function main() {
   });
 
   // ENDPOINT Read By ID
-  app.get("/personagens/:id", function (req, res) {
+  app.get("/personagens/:id", async function (req, res) {
     const id = req.params.id;
-    const item = lista[id - 1];
+    const item = await collection.findOne({_id: new ObjectId(id)})
     if (!item) {
       return res.status(404).send("ALERTA: Ítem não encontrado");
     }
