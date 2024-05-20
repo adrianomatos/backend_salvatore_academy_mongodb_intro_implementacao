@@ -36,7 +36,7 @@ async function main() {
   // ENDPOINT Read By ID
   app.get("/personagens/:id", async function (req, res) {
     const id = req.params.id;
-    const item = await collection.findOne({_id: new ObjectId(id)})
+    const item = await collection.findOne({ _id: new ObjectId(id) });
     if (!item) {
       return res.status(404).send("ALERTA: Ítem não encontrado");
     }
@@ -47,16 +47,15 @@ async function main() {
   app.use(express.json());
 
   // ENDPOINT Create POST /personagens
-  app.post("/personagens", function (req, res) {
-    const body = req.body;
-    const novoItem = body.nome;
-    if (!novoItem) {
+  app.post("/personagens", async function (req, res) {
+    const novoItem = req.body;
+    if (!novoItem || !novoItem.nome) {
       return res.status(400).send("ALERTA: Falta propriedade NOME");
     }
-    if (lista.includes(novoItem)) {
-      return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
-    }
-    lista.push(novoItem);
+    // if (lista.includes(novoItem)) {
+    //   return res.status(409).send("ALERTA: Ítem JÁ EXISTE");
+    // }
+    await collection.insertOne(novoItem);
     res.status(201).send("Ítem adicionado com sucesso: " + novoItem);
   });
 
